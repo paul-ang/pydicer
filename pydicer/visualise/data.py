@@ -93,6 +93,58 @@ class VisualiseData:
 
             logger.debug("Created visualisation: %s", vis_filename)
 
+        for _, row in df_process[df_process["modality"] == "PT"].iterrows():
+            img_path = Path(row.path)
+            vis_filename = self.working_directory.joinpath(img_path, "PT.png")
+
+            if vis_filename.exists() and not force:
+                logger.info("Visualisation already exists at %s", vis_filename)
+                continue
+
+            img = sitk.ReadImage(
+                str(self.working_directory.joinpath(img_path, f"{row.modality}.nii.gz"))
+            )
+
+            vis = ImageVisualiser(img)
+            fig = vis.show()
+            # load meta data from json file
+            ds_dict = load_object_metadata(row)
+            # deal with missing value in study description
+            if "StudyDescription" not in ds_dict:
+                ds_dict.StudyDescription = "NaN"
+            # choose axis one
+            # (this is the top-right box that is blank)
+            ax = fig.axes[1]
+
+            # choose a sensible font size
+            # this will depend on the figure size you set
+            fs = 9
+
+            # insert metadata information
+            ax.text(
+                x=0.02,
+                y=0.90,
+                s=f"Patient ID: {ds_dict.PatientID}\n"
+                f"Series Instance UID: \n"
+                f"{ds_dict.SeriesInstanceUID}\n"
+                f"Study Description: {ds_dict.StudyDescription}\n"
+                f"Study Date: {ds_dict.StudyDate}",
+                color="black",
+                ha="left",
+                va="top",
+                size=fs,
+                wrap=True,
+                bbox=dict(boxstyle="square", fc="w", ec="r"),
+            )
+
+            fig.savefig(
+                vis_filename,
+                dpi=fig.dpi,
+            )
+            plt.close(fig)
+
+            logger.debug("Created visualisation: %s", vis_filename)
+
         # Next visualise the structures on top of their linked image
         for _, row in df_process[df_process["modality"] == "RTSTRUCT"].iterrows():
 

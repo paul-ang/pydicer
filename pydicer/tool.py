@@ -104,9 +104,9 @@ class PyDicer:
         self.convert.convert(patient=patient, force=force)
         self.visualise.visualise(patient=patient, force=force)
 
-        self.analyse.compute_radiomics(
-            dataset_name=CONVERTED_DIR_NAME, patient=patient, force=force
-        )
+        # self.analyse.compute_radiomics(
+        #     dataset_name=CONVERTED_DIR_NAME, patient=patient, force=force
+        # )
         self.analyse.compute_dvh(dataset_name=CONVERTED_DIR_NAME, patient=patient, force=force)
 
     # Object generation (insert in dataset(s) or all data)

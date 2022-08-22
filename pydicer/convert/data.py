@@ -421,16 +421,21 @@ class ConvertData:
                         # Only convert if it doesn't already exist or if force is True
                         output_dir.mkdir(exist_ok=True, parents=True)
 
-                        series_files = df_files.file_path.tolist()
+                        if config.get_config("interp_missing_slices"):
+                            series_files = handle_missing_slice(df_files)
+                        else:
+                            # TODO Handle inconsistent slice spacing
+                            raise ValueError(
+                                "Slice Locations are not evenly spaced. Set "
+                                "interp_missing_slices to True to interpolate slices."
+                            )
+
                         series_files = [str(f) for f in series_files]
+                        series = sitk.ReadImage(series_files)
 
                         nifti_file = output_dir.joinpath("PT.nii.gz")
-
-                        convert_dicom_to_nifti_pt(
-                            series_files,
-                            nifti_file,
-                            default_patient_weight=config.get_config("default_patient_weight"),
-                        )
+                        sitk.WriteImage(series, str(nifti_file))
+                        logger.debug("Writing PT Image Series to: %s", nifti_file)
 
                         json_file = output_dir.joinpath("metadata.json")
                         convert_dicom_headers(

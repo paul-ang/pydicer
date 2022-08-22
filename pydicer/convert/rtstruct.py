@@ -75,6 +75,7 @@ def convert_rtstruct(
 
     for struct_index, struct_image in enumerate(struct_list):
         out_name = f"{prefix}{struct_name_sequence[struct_index]}.nii.gz"
+        out_name = out_name.replace('/', 'Or')  # replace '/' to 'Or' for compatibility with the joinpath()
         out_name = output_dir.joinpath(out_name)
         logger.debug("Writing file to: %s", out_name)
         sitk.WriteImage(struct_image, str(out_name))
