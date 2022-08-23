@@ -431,7 +431,7 @@ class ConvertData:
                             )
 
                         series_files = [str(f) for f in series_files]
-                        series = sitk.ReadImage(series_files)
+                        series = sitk.ReadImage(series_files, sitk.sitkFloat32)
 
                         nifti_file = output_dir.joinpath("PT.nii.gz")
                         sitk.WriteImage(series, str(nifti_file))

@@ -4,8 +4,10 @@ import pydicom
 import SimpleITK as sitk
 from matplotlib import cm
 
-from platipy.dicom.io.rtstruct_to_nifti import transform_point_set_from_dicom_struct
 from platipy.imaging.utils.io import write_nrrd_structure_set
+
+from pydicer.convert.rtstruct_to_nifti import \
+    transform_point_set_from_dicom_struct
 
 logger = logging.getLogger(__name__)
 
